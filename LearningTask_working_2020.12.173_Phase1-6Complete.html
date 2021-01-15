@@ -1,0 +1,1609 @@
+
+// Coded and designed by Maris Vainre, Becky Gilbert, and Marc Bennet.
+// When using this work, or any part of it, please cite it:
+// Maris Vainre, Becky Gilbert & Marc Bennet. Affective Probabilistic Reversal Learning Task using jsPsych. Github repository. https://github.com/mvainre/affective-probabilistic-reversal-learning-task
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>SWELL: The Fictional Football Cup</title>
+    <script src="jspsych-6.1.0/jspsych.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych-6.1.0/plugins/jspsych-vsl-grid-scene.js"></script>
+    <link href="SwellStyle.css" rel="stylesheet" type="text/css">
+    <meta charset="utf-8">
+    <style>
+        /* here's the CSS if you want to change the padding around the images */
+        td {
+            padding: 0px 0px !important;
+            border: 0px !important;
+        }
+    </style>
+</head>
+<body></body>
+
+<script>
+
+    //task set-up:
+    //Participant needs to choose a winning team between two competing football teams. There are 4 teams and 2 set pairs.
+    //The side of the field is randomised (AB matches could be set up as A-B or B-A)
+    //Each match is preceded by an image that can be either negative or neutral in nature
+    //There are 3 phases in each condition. Conditions are counterbalanced.
+
+    //set up timeline
+    var timeline = [];
+
+    // set up how many trials are run per phase, the actual matches will be double that.
+    var numberOfTrials = 3;
+
+    //set up duration
+    var fixationDuration = 300;
+    var IAPSduration = 1000;
+    var stimulusDuration = 2000;
+    var postTrial_gap = 500;
+    var feedbackDuration = 1000;
+    var errorDuration = 1500;
+
+    //set up team logos
+    var logo1 = 'Logos/1.png';
+    var logo2 = 'Logos/2.png';
+    var logo3 = 'Logos/3.png';
+    var logo4 = 'Logos/4.png';
+
+    // create an array of all pictures in the IAPS database
+    var photoDatabase_neu_trial = ['IAPS/Neutral/neutral1.bmp','IAPS/Neutral/neutral2.bmp','IAPS/Neutral/neutral3.bmp'];
+    var photoDatabase_neg_trial = ['https://i.ibb.co/7WQmfDc/neg28.png','https://i.ibb.co/vcf6ZCw/neg34.png','https://i.ibb.co/Ct4gtMR/neg33.png'];
+
+    var image_size = 300; // pixelscc
+
+    // set up which keys to press for answering
+    let choices = ["c", "n"];
+
+    // create global variables to store information that you want to pass between trials/functions
+    var phase1LoserAB = '';
+    var phase1WinnerAB = '';
+    var phase1LoserCD = '';
+    var phase1WinnerCD = '';
+
+    // set up trial counter
+    let currentTrialNumber = 1;
+    var Phase1_trialnumber = 1;
+    var Phase2_trialnumber = 1;
+    var Phase3_trialnumber = 1;
+    var Phase4_trialnumber = 1;
+    var Phase5_trialnumber = 1;
+    var Phase6_trialnumber = 1;
+
+    // collecting the trial info variables into this globally scoped object
+    var trialInfo = {
+        phase: 1,
+        teamLeft: '',
+        teamRight: '',
+        IAPSconditionSelected: '',
+        pointsTotal: 0.2
+    };
+
+    // assign team logos to teams randomly. This ensures that across participants, different "logos" play against each other.
+    var logos = [logo1, logo2, logo3, logo4];
+    var shuffleLogos = jsPsych.randomization.shuffle(logos);
+    var teamA = shuffleLogos[0];
+    var teamB = shuffleLogos[1];
+    var teamC = shuffleLogos[2];
+    var teamD = shuffleLogos[3];
+    // just checking if all's running well:
+    console.log("Team A is: " + teamA);
+    console.log("Team B is: " + teamB);
+    console.log("Team C is: " + teamC);
+    console.log("Team D is: " + teamD);
+
+    /* define welcome message*/
+    var welcome = {
+        type: "html-keyboard-response",
+        stimulus: "<h1>Welcome!</h1>" +
+            "<p>Thank you for taking your time to participate in this study! </p><h2>Press any key to start</h2>"
+    };
+    timeline.push(welcome);
+
+    var instructions1 = {
+        type: 'instructions',
+        pages: ["<h1>Get settled in for the next 15 minutes</h1>" +
+            "<p>Make sure you're <b>sitting comfortably</b>.<br><br><h1>&#x1F515</h1>Shield yourself from <b>distractions</b>: <br>&#x1F4F4 <b>mute</b> your phone and <br>&#x1F4E9 e-mail alerts </p>" +
+
+            "<h2><br>Ready? Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions1);
+
+    var instructions2 = {
+        type: 'instructions',
+        pages: ["<h1>&#x26BD</h1><p>This game is about guessing which fictional football teams will win a hypothetical match. <br>To start, take a look at the logos of these fictional teams.</p>" +
+
+            "<h2><br>Press space to see the team logos</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions2);
+
+    var teamA_demo = {
+        type: 'image-keyboard-response',
+        stimulus: teamA,
+        stimulus_height: 300,
+        choices: [32],
+        prompt: "<h2><br>Press space to see the next one</h2>",
+        stimulus_duration: null,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamA_demo);
+
+    var teamB_demo = {
+        type: 'image-keyboard-response',
+        stimulus: teamB,
+        stimulus_height: 300,
+        choices: [32],
+        prompt: "<h2><br>Press space to see the next one</h2>",
+        stimulus_duration: null,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamB_demo);
+
+    var teamC_demo = {
+        type: 'image-keyboard-response',
+        stimulus: teamC,
+        stimulus_height: 300,
+        choices: [32],
+        prompt: "<h2><br>Press space to see the next one</h2>",
+        stimulus_duration: null,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamC_demo);
+
+    var teamD_demo = {
+        type: 'image-keyboard-response',
+        stimulus: teamD,
+        stimulus_height: 300,
+        choices: [32],
+        prompt: "<p><br>That's the 4.</p><h2>Press space to continue</h2>",
+        stimulus_duration: null,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamD_demo);
+
+    var instructions3 = {
+        type: 'instructions',
+        pages: ["<h1>&#x2714</h1><p>Now you know the logos.</p>"+
+
+        "<h3>Let us tell you more about these teams</h3> <p>These teams played in a mini-league. <br>That is, the same two teams played against each other over an entire season.</p>" +
+
+        "<p>You will see the two teams that played in each match – <br>from the start of the season to the end of the season.</p>"+
+
+        "<h2><br>Press space to see the matches</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions3);
+
+    //Display the teams' logos in pairs in which they will appear
+    var teamsAB = [
+        [teamA, 0, teamB]
+    ];
+
+    var teamsAB_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsAB, [image_size, image_size]);
+
+    var teamsAB_demo = {
+        type: 'html-keyboard-response',
+        stimulus: teamsAB_demo_prep,
+        choices: [32],
+        prompt: "<h2>Press space to see the next match</h2>",
+        stimulus_duration: null,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamsAB_demo);
+
+    var teamsCD = [
+        [teamC, 0,  teamD]
+    ];
+
+    var teamsCD_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsCD, [image_size, image_size]);
+
+    var teamsCD_demo = {
+        type: 'html-keyboard-response',
+        stimulus: teamsCD_demo_prep,
+        choices: [32],
+        prompt: "<h2>Press space to continue</h2>",
+        //stimulus_duration: stimulusDuration,
+        trial_duration: null,
+        response_ends_trial: true
+    };
+    timeline.push(teamsCD_demo);
+
+    var instructions4 = {
+        type: 'instructions',
+        pages: ["<h1>&#x1F3C6</h1>"+
+          "<h3>Your job is simple: <br>you have to guess which team won each match</h3>"+
+
+            "<h4>How do you make the guess?</h4> <p>Select the team that you think was most likely to win that match. <br>Do this by selecting the logo: <br><b>C-key = team on the left. N-key = team on the right.</b></p>" +
+
+            "<h2><br>Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions4);
+
+    var instructions5 = {
+        type: 'instructions',
+        pages: [
+            "<h1>&#x1F4B0</h1>" +
+            "<p>Correct guesses will win you some (hypothetical) cash: <br><b>£0.10</b> to be precise. <br>If you guess wrong, don't worry - you won't lose any money.</p>" +
+            "<p><b>Your goal is to earn as much fictional £££ as possible.</b></p>" +
+
+            "<h2><br>Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions5);
+
+
+    var instructions6 = {
+        type: 'instructions',
+        pages: [
+            "<h1>&#x1F945</h1>" +
+            "<p>At first, you might not be sure who was likely to win <br>but <b>soon you might develop an idea about which team is stronger</b> than another at a given time in the season.<p>"+
+            "<p><b>Stay focused:</b> <br>teams may improve or deteriorate over time. <br>Use the feedback provided to guess the winner and win non-real £££.</p>" +
+
+            "<h2><br>Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions6);
+
+    var instructions7 = {
+        type: 'instructions',
+        pages: [
+            "<p>Also, before each match, you'll see a photo. It's there to keep you alert. <br>It won't predict the result of the match.</p>"+
+            "<h2><br>Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions7);
+
+
+    var instructions8 = {
+        type: 'instructions',
+        pages: ["<h1>&#x23F1</h1>"+
+            "<h2>Try to be <b>as quick as possible</b> in your responses</h2>"+
+            "<p>To make it faster, <br>put your left index finger on the C-key and your right index finger on the N-key.</b></p>"+
+            "<h2><br>Ready? Press space to start</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions8);
+
+    // Set up elements that are universal across the task
+
+    // Gets triggered when response in the 5 last trials has been slower than 500ms. Only kicks in after 6 trials (including the choosing trials) have run
+      var too_slow_message = {
+          type: 'html-keyboard-response',
+          stimulus: '<span style="color:#ef476f;font-size:30px;">Please respond faster</span>',
+          trial_duration: errorDuration
+      };
+
+      var display_too_slow_message_conditional = {
+          timeline: [too_slow_message],
+          conditional_function: function() {
+            if (Phase1_trialnumber > 6) {
+              var meanrt_last5trials = jsPsych.data.get().filter({trial_element: 'match'}).last(5).select('rt').mean(); // takes the last 5 trials where choice needs to be made (labeled as match trials)
+              if (meanrt_last5trials > 500) { // gets triggered if RT has been more than 500ms
+                display_too_slow_message = true;
+                console.log('I am being too slow. RT so far: ' + meanrt_last5trials);
+                return true;
+              } else {
+                display_too_slow_message = false;
+                console.log('going fast enough!. RT so far: ' + meanrt_last5trials);
+                return false;
+              }
+            } else {
+            console.log('trial number not yet 5. Current one: ' + Phase1_trialnumber);
+            return false;
+            }
+          }
+      };
+
+      // Gets triggered when no keyboard response has made for the last 3 trials where response is needed. The trial is paused and will continue when space is pressed.
+      var instructions_break1 = {
+          type: 'instructions',
+          pages: ["<h1>Need a break?</h1>" +
+              "<p>Have a good stretch if so.</p>" +
+              "<h2><br>Press space when you're ready to continue</h2>"],
+          key_forward: 32, // code for space
+          show_clickable_nav: false
+      };
+
+      var display_haveabreak_message_conditional = {
+          timeline: [instructions_break1],
+          conditional_function: function() {
+              var trial_totalmisses = jsPsych.data.get().filter({trial_element: 'match', key_press: null}).count(); // this is just to test the function in console. It has no functionality for the function and can be deleted.
+              var trial_last3matches = jsPsych.data.get().filter({trial_element: 'match'}).last(3); // count the last 3 trials that are matches (ie where keypress is needed):
+              var trial_last3matches_misses = trial_last3matches.filter({key_press: null}).count(); // count the number of times where there were no keypress (a proxy that the participant may not be paying attention);
+              console.log('trials misses ' + trial_totalmisses + ' out of ' + Phase1_trialnumber + ' trials. Number of trials missed in the last 3: ' + trial_last3matches_misses);
+              if (trial_last3matches_misses  == 3) { // gets triggered if missed at least 3 trials
+                display_haveabreak_message = true;
+                console.log('Should I have a break? I have missed many trials: ' + trial_last3matches_misses);
+                return true;
+              } else {
+                display_haveabreak_message = false;
+                console.log('No need for a break! Only missed few trials: ' + trial_last3matches_misses);
+                return false;
+              }
+            },
+      };
+
+    // first show fixation
+    var fixation = {
+        type: 'html-keyboard-response',
+        stimulus: '<span style="font-size:60px;">+</span>',
+        choices: jsPsych.NO_KEYS,
+        trial_duration: fixationDuration
+    }
+
+    // choose which order of affective information will be displayed
+    var IAPSconditions = ['neg', 'neu'];
+    var shuffleIAPSconditions = jsPsych.randomization.shuffle(IAPSconditions);
+    var IAPScondition1 = shuffleIAPSconditions[0];
+    var IAPScondition2 = shuffleIAPSconditions[1];
+
+    function choose_IAPSimage() {
+      console.log('condition: ', IAPScondition1);
+      if (IAPScondition1 == 'neg') {
+        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neg_trial, 1);
+      } else {
+        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neu_trial, 1);
+      };
+      console.log('image selected: ', IAPSimage);
+      return [[0, IAPSimage, 0]];
+    }
+
+    // now show an image, either negative or neutral as selected before
+    var pick_IAPSimage = {
+      type: 'html-keyboard-response',
+      stimulus: function() {
+        // need to wrap all of this in a function so that it runs on every repetition of the trial
+        var curr_image = choose_IAPSimage();
+        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size, image_size]);
+      },
+      choices: jsPsych.NO_KEYS,
+      prompt: "",
+      trial_duration: IAPSduration,
+      data: function () {
+        return {
+          trial_element: "iaps image",
+          image_shown: IAPSimage,
+          affect: IAPScondition1
+        };
+      },
+    };
+
+    // set up the matches
+    function chooseLayout_pickAB() {
+        // create an array of all teams
+        var teams = [teamA, teamB];
+        // pick layout at random so all are equally likely
+        var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+        console.log('logo on the left: ', layoutSelected);
+        if (layoutSelected == teamA) {
+            trialInfo_teamLeft = teamA; // adding trialInfo_Phase1 so that this can be accessed outside the function
+            trialInfo_teamRight = teamB;
+        } else {
+            trialInfo_teamLeft = teamB;
+            trialInfo_teamRight = teamA;
+        };
+        return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+    }
+
+    var match_pickAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // This has to be wrapped in a function, otherwise 'chooseLayout_phase1_pickAB' and 'chooseLayout_phase1_pickCD' functions
+            // will both run immediately when the page loads, rather than _during_ the task, which is a problem because these
+            // two functions both modify the global 'trialInfo' object. When this happens, the 'trialInfo' object is modified with the info
+            // for the CD match before the experiment starts, and so it contains the wrong information during this trial.
+            return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(chooseLayout_pickAB(), [image_size, image_size]);
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        data: function () {
+            return {
+                phase: 1,
+                trial_element: "match",
+                trialNumber: Phase1_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                points_cumulative_excludingThisTrial: jsPsych.timelineVariable('trialInfo.pointsTotal')
+            };
+        },
+        on_finish: function (data) {
+            console.log('trial info phase 1 AB: ', trialInfo);
+            data.accuracy = true;
+            Phase1_trialnumber += 1;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                phase1WinnerAB = trialInfo_teamLeft;
+                phase1LoserAB = trialInfo_teamRight;
+            } else {
+                phase1WinnerAB = trialInfo_teamRight;
+                phase1LoserAB = trialInfo_teamLeft;
+            }
+            console.log('phase 1 winner AB: ', phase1WinnerAB);
+            console.log('phase 1 loser AB: ', phase1LoserAB);
+        }
+    };
+
+    var points_tracker_pickAB = {
+        type: 'html-keyboard-response',
+        stimulus: function () {
+            var points_feedback = '<span style="color:#584b53;font-size:20px;">£0.00</span>';
+            var last_match_correct = jsPsych.data.getLastTrialData().values()[0].accuracy;
+            if (last_match_correct == true) {
+                points_feedback = '<span style="color:#06d6a0;font-size:20px;">+ £0.10</span>'
+            }
+            return points_feedback;
+        },
+        trial_duration: feedbackDuration
+    };
+
+    function chooseLayout_pickCD() {
+        // create an array of all teams
+        var teams = [teamC, teamD];
+        // pick layout at random so all are equally likely
+        var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+        if (layoutSelected == teamC) {
+            trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+            trialInfo_teamRight = teamD;
+        } else {
+            trialInfo_teamLeft = teamD;
+            trialInfo_teamRight = teamC;
+        };
+        return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+    }
+
+    var match_pickCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // As with match_phase1_pickCD, this has to be wrapped in a function, otherwise the 'chooseLayout_phase1_pickCD' function
+            // will run immediately when the page loads, rather than _during_ the task, which is a problem because it
+            // modifies the global 'trialInfo' object. When this happens, the 'trialInfo' object is modified with the info
+            // for this CD match before the experiment starts, and so it contains the wrong information during the earlier pick AB trial.
+            return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(chooseLayout_pickCD(), [image_size, image_size]);
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        data: function() {
+            return {
+                phase: 1,
+                trial_element: "match",
+                trialNumber: Phase1_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                points_cumulative_excludingThisTrial: trialInfo.pointsTotal
+            };
+        },
+        on_finish: function (data) {
+            console.log('trial info phase 1 CD: ', trialInfo);
+            data.accuracy = true;
+            Phase1_trialnumber += 1;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                phase1WinnerCD = trialInfo_teamLeft;
+                phase1LoserCD = trialInfo_teamRight;
+            } else {
+                phase1WinnerCD = trialInfo_teamRight;
+                phase1LoserCD = trialInfo_teamLeft;
+            }
+            console.log('phase 1 winner CD: ', phase1WinnerCD);
+            console.log('phase 1 loser CD: ', phase1LoserCD);
+        }
+    };
+
+    var points_tracker_pickCD = {
+        type: 'html-keyboard-response',
+        stimulus: function () {
+            var points_feedback = '<span style="color:#584b53;font-size:20px;">£0.00</span>';
+            var last_match_correct = jsPsych.data.getLastTrialData().values()[0].accuracy;
+            if (last_match_correct == true) {
+                points_feedback = '<span style="color:#06d6a0;font-size:20px;">+ £0.10</span>'
+            }
+            return points_feedback;
+        },
+        trial_duration: feedbackDuration
+    };
+
+    var trial_procedure_phase1_picking = {
+        timeline: [fixation, pick_IAPSimage, match_pickAB, points_tracker_pickAB, fixation, pick_IAPSimage, match_pickCD, points_tracker_pickCD]
+    };
+    timeline.push(trial_procedure_phase1_picking);
+
+    //////// PHASE 1 ///////
+    //set up trial Phase1 1. numberOfTrials controls how many times this thing loops.
+    // participant will be shown a fixation cross, then a IAPS image that is either neutral or negative, and then the match
+
+    function chooseLayout_subsequent_Phase1 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 1 looping trial procedure
+    var match_phase1_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase1('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 1,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase1_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase1Winner: phase1WinnerAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase1_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
+            // but I took this out because it didn't make sense to me
+            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 1 looping trial procedure
+    var match_phase1_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase1('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 1,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase1_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase1Winner: phase1WinnerCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase1_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up points feedback screen for use in phase 1 looping trial procedure
+    var points_tracker_inloop = {
+        type: 'html-keyboard-response',
+        stimulus: function () {
+            var points_feedback = '<span style="color:#584b53;font-size:20px;">£0.00</span>';
+            var last_match_correct = jsPsych.data.getLastTrialData().values()[0].accuracy;
+            if (last_match_correct == true) {
+                points_feedback = '<span style="color:#06d6a0;font-size:20px;">+£0.10</span>'
+            }
+            return points_feedback;
+        },
+        trial_duration: feedbackDuration
+    };
+
+    var trial_procedure_phase1_loop = {
+        timeline: [fixation, pick_IAPSimage, match_phase1_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage, match_phase1_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 1 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase1_loop);
+
+
+
+    //////// PHASE 2 ////////
+    //The probability will now be reversed but the condition stays same
+    function chooseLayout_subsequent_Phase2 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 1 looping trial procedure
+    var match_phase2_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase2('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 2,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase2_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase2Winner: phase1LoserAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase2_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
+            // but I took this out because it didn't make sense to me
+            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 1 looping trial procedure
+    var match_phase2_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase2('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 2,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase2_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase2Winner: phase1LoserCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase2_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    var trial_procedure_phase2_loop = {
+        timeline: [fixation, pick_IAPSimage, match_phase2_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage, match_phase2_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 2 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase2_loop);
+
+
+
+    //////// PHASE 3 ////////
+    function chooseLayout_subsequent_Phase3 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 3 looping trial procedure
+    var match_phase3_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase3('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 3,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase3_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase3Winner: phase1WinnerAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase3_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
+            // but I took this out because it didn't make sense to me
+            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 3 looping trial procedure
+    var match_phase3_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase3('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 3,
+                trial_element: "match",
+                condition: IAPScondition1,
+                trialNumber: Phase3_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase3Winner: phase1WinnerCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase3_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    var trial_procedure_phase3_loop = {
+        timeline: [fixation, pick_IAPSimage, match_phase3_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage, match_phase3_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 3 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase3_loop);
+
+
+    ////////// CHANGE IN CONDITION //////////
+
+
+    // asking if participant would like to have a break
+    timeline.push(instructions_break1);
+
+
+    //////// PHASE 4 ////////
+
+    function choose_IAPSimage2() {
+      console.log('starting condition: ', IAPScondition2);
+      if (IAPScondition2 == 'neg') {
+        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neg_trial, 1);
+      } else {
+        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neu_trial, 1);
+      };
+      console.log('image selected: ', IAPSimage);
+      return [[0, IAPSimage, 0]];
+    }
+
+    var pick_IAPSimage2 = {
+      type: 'html-keyboard-response',
+      stimulus: function() {
+        // need to wrap all of this in a function so that it runs on every repetition of the trial
+        var curr_image = choose_IAPSimage2();
+        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size, image_size]);
+      },
+      choices: jsPsych.NO_KEYS,
+      prompt: "",
+      trial_duration: IAPSduration,
+      data: function () {
+        return {
+          trial_element: "iaps image",
+          image_shown: IAPSimage,
+          affect: IAPScondition2
+        };
+      },
+    };
+
+    //set up trial Phase4. numberOfTrials controls how many times this thing loops.
+    // participant will be shown a fixation cross, then a IAPS image that is either neutral or negative, and then the match
+
+    function chooseLayout_subsequent_Phase4 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 1 looping trial procedure
+    var match_phase4_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase4('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 4,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase4_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase4Winner: phase1WinnerAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase4_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
+            // but I took this out because it didn't make sense to me
+            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 1 looping trial procedure
+    var match_phase4_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase4('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 4,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase4_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase4Winner: phase1WinnerCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase4_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    var trial_procedure_phase4_loop = {
+        timeline: [fixation, pick_IAPSimage2, match_phase4_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage2, match_phase4_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 1 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase4_loop);
+
+    //////// PHASE 5 ////////
+    // The probability will now be reversed but the condition stays same
+    function chooseLayout_subsequent_Phase5 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 1 looping trial procedure
+    var match_phase5_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase5('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 5,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase5_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase5Winner: phase1LoserAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase5_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
+            // but I took this out because it didn't make sense to me
+            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 5 looping trial procedure
+    var match_phase5_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase5('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 5,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase5_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase5Winner: phase1LoserCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase5_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    var trial_procedure_phase5_loop = {
+        timeline: [fixation, pick_IAPSimage2, match_phase5_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage2, match_phase5_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 2 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase5_loop);
+
+    //////// PHASE 6 ////////
+
+    function chooseLayout_subsequent_Phase6 (matchType) {
+        console.log('match type: ', matchType);
+        if (matchType == 'ab') {
+            // create an array of all teams
+            var teams = [teamA, teamB];
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamA) {
+                trialInfo_teamLeft = teamA;
+                trialInfo_teamRight = teamB;
+            } else {
+                trialInfo_teamLeft = teamB;
+                trialInfo_teamRight = teamA
+            }
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        } else {
+            // create an array of teams
+            var teams = [teamC, teamD];
+            // pick layout at random so all are equally likely. Pick the team that will be on the left.
+            var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
+            if (layoutSelected == teamC) {
+                trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
+                trialInfo_teamRight = teamD;
+            } else {
+                trialInfo_teamLeft = teamD;
+                trialInfo_teamRight = teamC
+            };
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+        }
+    }
+
+    // set up A-B trial for use in phase 6 looping trial procedure
+    var match_phase6_subsequentAB = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase6('ab');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 6,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase6_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase6Winner: phase1WinnerAB,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function(data) {
+            Phase6_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if c key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0.10;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal = trialInfo.pointsTotal + 0;
+                data.pointsTotal = trialInfo.pointsTotal;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    // set up C-D trial for use in phase 3 looping trial procedure
+    var match_phase6_subsequentCD = {
+        type: 'html-keyboard-response',
+        stimulus: function() {
+            // need to wrap all of this in a function so that it runs on every repetition of the trial
+            var curr_layout = chooseLayout_subsequent_Phase6('cd');
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            return vsl_layout;
+        },
+        choices: choices,
+        prompt: "Who will win? Press C or N",
+        trial_duration: stimulusDuration,
+        data: function() {
+            return {
+                phase: 6,
+                trial_element: "match",
+                condition: IAPScondition2,
+                trialNumber: Phase3_trialnumber,
+                teamLeft: trialInfo_teamLeft,
+                teamRight: trialInfo_teamRight,
+                phase6Winner: phase1WinnerCD,
+                points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
+            };
+        },
+        on_finish: function (data) {
+            Phase6_trialnumber += 1;
+            // choose the winner
+            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            console.log('trial winner: ', matchOutcome);
+            // add match winner to data
+            data.match_winner = matchOutcome;
+
+            var selected_team;
+            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
+                // if c key was pressed, then the participant chose whichever team was on the left
+                selected_team = trialInfo_teamLeft;
+            } else if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "n") {
+                // if n key was pressed, then the participant chose whichever team was on the right
+                selected_team = trialInfo_teamRight;
+            }
+            console.log('selected team: ', selected_team);
+            // add selected team to data
+            data.selected_team = selected_team;
+
+            // compare the winning team with the selected team
+            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            if (selected_team == matchOutcome) {
+                console.log('correct selection');
+                data.accuracy = true;
+                trialInfo.pointsTotal = trialInfo.pointsTotal  + 0.10;
+                console.log('points: ' + trialInfo.pointsTotal);
+            } else {
+                console.log('incorrect selection');
+                data.accuracy = false;
+                trialInfo.pointsTotal  = trialInfo.pointsTotal  + 0;
+                console.log('points: ' + trialInfo.pointsTotal);
+            }
+        }
+    };
+
+    var trial_procedure_phase6_loop = {
+        timeline: [fixation, pick_IAPSimage2, match_phase6_subsequentAB, points_tracker_inloop, display_too_slow_message_conditional, display_haveabreak_message_conditional, fixation, pick_IAPSimage2, match_phase6_subsequentCD, points_tracker_inloop],
+        repetitions: numberOfTrials,
+    };
+    // add phase 6 looping procedure to the main timeline
+    timeline.push(trial_procedure_phase6_loop);
+
+    // add end message
+    var endMessage = {
+        type: 'html-keyboard-response',
+        stimulus: function () {
+            var finalScore_raw = jsPsych.data.get().select('pointsTotal').max();
+            var finalScore = (Math.round(finalScore_raw * 100)/100).toFixed(2);
+            var message = '<h1>&#x1F389 <br>Congratulations!</h1> <p>You&#39;ve finished with this game. <br><br>If it was real money, <br>you would&#39;ve won <b>£' + finalScore + '</b>!</p>';
+            return message;
+        },
+        prompt: "<h2>Press space to continue</h2>"
+    };
+    timeline.push(endMessage)
+
+    jsPsych.init({
+        timeline: timeline,
+        show_progress_bar: true,
+        preload_images: [photoDatabase_neu_trial, photoDatabase_neg_trial], // preload images so that the experiment runs well
+        show_preload_progress_bar: false, //hide preload progress bar
+        on_finish: function () {
+            jsPsych.data.displayData();
+            jsPsych.data.get().localSave("csv","learningtask_data.csv")
+        }
+    });
+
+</script>
+
+</html>
