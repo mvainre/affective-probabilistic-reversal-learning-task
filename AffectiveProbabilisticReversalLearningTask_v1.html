@@ -1,18 +1,16 @@
-
-// Coded and designed by Maris Vainre, Becky Gilbert, and Marc Bennet.
-// When using this work, or any part of it, please cite it:
-// Maris Vainre, Becky Gilbert & Marc Bennet. Affective Probabilistic Reversal Learning Task using jsPsych. Github repository. https://github.com/mvainre/affective-probabilistic-reversal-learning-task
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>SWELL: The Fictional Football Cup</title>
-    <script src="jspsych-6.1.0/jspsych.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-instructions.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-html-keyboard-response.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-image-keyboard-response.js"></script>
-    <script src="jspsych-6.1.0/plugins/jspsych-vsl-grid-scene.js"></script>
-    <link href="SwellStyle.css" rel="stylesheet" type="text/css">
+    <script src = "js/jquery.min.js" type="text/javascript"></script>
+    <script src="jspsych/jspsych.js"></script>
+    <script src="jspsych/plugins/jspsych-instructions.js"></script>
+    <script src="jspsych/plugins/jspsych-html-keyboard-response.js"></script>
+    <script src="jspsych/plugins/jspsych-image-keyboard-response.js"></script>
+    <script src="jspsych/plugins/jspsych-vsl-grid-scene.js"></script>
+    <script src="jspsych/plugins/jspsych-fullscreen.js"></script>
+    <script src = "jatos.js"></script> /* uncomment all jatos-related lines to run outside jatos
+    <link href="css/SwellStyle.css" rel="stylesheet" type="text/css"> /* this may need changing for the script to run
     <meta charset="utf-8">
     <style>
         /* here's the CSS if you want to change the padding around the images */
@@ -24,7 +22,7 @@
 </head>
 <body></body>
 
-<script>
+<script type="text/javascript">
 
     //task set-up:
     //Participant needs to choose a winning team between two competing football teams. There are 4 teams and 2 set pairs.
@@ -36,27 +34,267 @@
     var timeline = [];
 
     // set up how many trials are run per phase, the actual matches will be double that.
-    var numberOfTrials = 3;
+    var numberOfTrials = 19; //19 here due to number of images available
 
-    //set up duration
+    //set up durations
     var fixationDuration = 300;
-    var IAPSduration = 1000;
+    var IAPSduration = 1500;
     var stimulusDuration = 2000;
     var postTrial_gap = 500;
     var feedbackDuration = 1000;
     var errorDuration = 1500;
 
     //set up team logos
-    var logo1 = 'Logos/1.png';
-    var logo2 = 'Logos/2.png';
-    var logo3 = 'Logos/3.png';
-    var logo4 = 'Logos/4.png';
+    var logo1 = 'img/Logos/1.png';
+    var logo2 = 'img/Logos/2.png';
+    var logo3 = 'img/Logos/3.png';
+    var logo4 = 'img/Logos/4.png';
 
     // create an array of all pictures in the IAPS database
-    var photoDatabase_neu_trial = ['IAPS/Neutral/neutral1.bmp','IAPS/Neutral/neutral2.bmp','IAPS/Neutral/neutral3.bmp'];
-    var photoDatabase_neg_trial = ['https://i.ibb.co/7WQmfDc/neg28.png','https://i.ibb.co/vcf6ZCw/neg34.png','https://i.ibb.co/Ct4gtMR/neg33.png'];
+    var photoDatabase_neu_trial = ['img/IAPS/Neutral/2020.f.jpg',
+                                    'img/IAPS/Neutral/2020.jpg',
+                                    'img/IAPS/Neutral/2025.f.jpg',
+                                    'img/IAPS/Neutral/2025.jpg',
+                                    'img/IAPS/Neutral/2102.f.jpg',
+                                    'img/IAPS/Neutral/2102.jpg',
+                                    'img/IAPS/Neutral/2191.f.jpg',
+                                    'img/IAPS/Neutral/2191.jpg',
+                                    'img/IAPS/Neutral/2214.f.jpg',
+                                    'img/IAPS/Neutral/2214.jpg',
+                                    'img/IAPS/Neutral/2220.f.jpg',
+                                    'img/IAPS/Neutral/2220.jpg',
+                                    'img/IAPS/Neutral/2305.f.jpg',
+                                    'img/IAPS/Neutral/2305.jpg',
+                                    'img/IAPS/Neutral/2357.f.jpg',
+                                    'img/IAPS/Neutral/2357.jpg',
+                                    'img/IAPS/Neutral/2372.f.jpg',
+                                    'img/IAPS/Neutral/2372.jpg',
+                                    'img/IAPS/Neutral/2381.f.jpg',
+                                    'img/IAPS/Neutral/2381.jpg',
+                                    'img/IAPS/Neutral/2385.f.jpg',
+                                    'img/IAPS/Neutral/2385.jpg',
+                                    'img/IAPS/Neutral/2394.f.jpg',
+                                    'img/IAPS/Neutral/2394.jpg',
+                                    'img/IAPS/Neutral/2396.f.jpg',
+                                    'img/IAPS/Neutral/2396.jpg',
+                                    'img/IAPS/Neutral/2485.f.jpg',
+                                    'img/IAPS/Neutral/2485.jpg',
+                                    'img/IAPS/Neutral/2487.f.jpg',
+                                    'img/IAPS/Neutral/2487.jpg',
+                                    'img/IAPS/Neutral/2493.f.jpg',
+                                    'img/IAPS/Neutral/2493.jpg',
+                                    'img/IAPS/Neutral/2495.f.jpg',
+                                    'img/IAPS/Neutral/2495.jpg',
+                                    'img/IAPS/Neutral/2499.f.jpg',
+                                    'img/IAPS/Neutral/2499.jpg',
+                                    'img/IAPS/Neutral/2506.f.jpg',
+                                    'img/IAPS/Neutral/2506.jpg',
+                                    'img/IAPS/Neutral/2512.f.jpg',
+                                    'img/IAPS/Neutral/2512.jpg',
+                                    'img/IAPS/Neutral/2513.f.jpg',
+                                    'img/IAPS/Neutral/2513.jpg',
+                                    'img/IAPS/Neutral/2516.f.jpg',
+                                    'img/IAPS/Neutral/2516.jpg',
+                                    'img/IAPS/Neutral/2518.f.jpg',
+                                    'img/IAPS/Neutral/2518.jpg',
+                                    'img/IAPS/Neutral/2575.f.jpg',
+                                    'img/IAPS/Neutral/2575.jpg',
+                                    'img/IAPS/Neutral/2579.f.jpg',
+                                    'img/IAPS/Neutral/2579.jpg',
+                                    'img/IAPS/Neutral/2593.f.jpg',
+                                    'img/IAPS/Neutral/2593.jpg',
+                                    'img/IAPS/Neutral/2595.f.jpg',
+                                    'img/IAPS/Neutral/2595.jpg',
+                                    'img/IAPS/Neutral/2597.f.jpg',
+                                    'img/IAPS/Neutral/2597.jpg',
+                                    'img/IAPS/Neutral/2635.f.jpg',
+                                    'img/IAPS/Neutral/2635.jpg',
+                                    'img/IAPS/Neutral/2702.f.jpg',
+                                    'img/IAPS/Neutral/2702.jpg',
+                                    'img/IAPS/Neutral/2704.f.jpg',
+                                    'img/IAPS/Neutral/2704.jpg',
+                                    'img/IAPS/Neutral/2745.1.f.jpg',
+                                    'img/IAPS/Neutral/2745.1.jpg',
+                                    'img/IAPS/Neutral/2749.f.jpg',
+                                    'img/IAPS/Neutral/2749.jpg',
+                                    'img/IAPS/Neutral/2850.f.jpg',
+                                    'img/IAPS/Neutral/2850.jpg',
+                                    'img/IAPS/Neutral/2870.f.jpg',
+                                    'img/IAPS/Neutral/2870.jpg',
+                                    'img/IAPS/Neutral/3550.2.f.jpg',
+                                    'img/IAPS/Neutral/3550.2.jpg',
+                                    'img/IAPS/Neutral/4274.f.jpg',
+                                    'img/IAPS/Neutral/4274.jpg',
+                                    'img/IAPS/Neutral/4275.f.jpg',
+                                    'img/IAPS/Neutral/4275.jpg',
+                                    'img/IAPS/Neutral/4500.f.jpg',
+                                    'img/IAPS/Neutral/4500.jpg',
+                                    'img/IAPS/Neutral/4510.f.jpg',
+                                    'img/IAPS/Neutral/4510.jpg',
+                                    'img/IAPS/Neutral/4531.f.jpg',
+                                    'img/IAPS/Neutral/4531.jpg',
+                                    'img/IAPS/Neutral/4534.f.jpg',
+                                    'img/IAPS/Neutral/4534.jpg',
+                                    'img/IAPS/Neutral/4537.f.jpg',
+                                    'img/IAPS/Neutral/4537.jpg',
+                                    'img/IAPS/Neutral/4559.f.jpg',
+                                    'img/IAPS/Neutral/4559.jpg',
+                                    'img/IAPS/Neutral/4571.f.jpg',
+                                    'img/IAPS/Neutral/4571.jpg',
+                                    'img/IAPS/Neutral/4605.f.jpg',
+                                    'img/IAPS/Neutral/4605.jpg',
+                                    'img/IAPS/Neutral/6570.2.f.jpg',
+                                    'img/IAPS/Neutral/6570.2.jpg',
+                                    'img/IAPS/Neutral/7493.f.jpg',
+                                    'img/IAPS/Neutral/7493.jpg',
+                                    'img/IAPS/Neutral/7506.f.jpg',
+                                    'img/IAPS/Neutral/7506.jpg',
+                                    'img/IAPS/Neutral/7550.f.jpg',
+                                    'img/IAPS/Neutral/7550.jpg',
+                                    'img/IAPS/Neutral/8060.f.jpg',
+                                    'img/IAPS/Neutral/8060.jpg',
+                                    'img/IAPS/Neutral/8160.f.jpg',
+                                    'img/IAPS/Neutral/8160.jpg',
+                                    'img/IAPS/Neutral/8192.f.jpg',
+                                    'img/IAPS/Neutral/8192.jpg',
+                                    'img/IAPS/Neutral/8232.f.jpg',
+                                    'img/IAPS/Neutral/8232.jpg',
+                                    'img/IAPS/Neutral/8241.f.jpg',
+                                    'img/IAPS/Neutral/8241.jpg',
+                                    'img/IAPS/Neutral/8475.f.jpg',
+                                    'img/IAPS/Neutral/8475.jpg',
+                                    'img/IAPS/Neutral/9070.f.jpg',
+                                    'img/IAPS/Neutral/9070.jpg',
+                                    ];
 
-    var image_size = 300; // pixelscc
+    var photoDatabase_neg_trial = ['img/IAPS/Negative/2055.1.f.jpg',
+                                  'img/IAPS/Negative/2055.1.jpg',
+                                  'img/IAPS/Negative/2100.f.jpg',
+                                  'img/IAPS/Negative/2100.jpg',
+                                  'img/IAPS/Negative/2110.f.jpg',
+                                  'img/IAPS/Negative/2110.jpg',
+                                  'img/IAPS/Negative/2120.f.jpg',
+                                  'img/IAPS/Negative/2120.jpg',
+                                  'img/IAPS/Negative/2141.f.jpg',
+                                  'img/IAPS/Negative/2141.jpg',
+                                  'img/IAPS/Negative/2276.f.jpg',
+                                  'img/IAPS/Negative/2276.jpg',
+                                  'img/IAPS/Negative/2278.f.jpg',
+                                  'img/IAPS/Negative/2278.jpg',
+                                  'img/IAPS/Negative/2312.f.jpg',
+                                  'img/IAPS/Negative/2312.jpg',
+                                  'img/IAPS/Negative/2399.f.jpg',
+                                  'img/IAPS/Negative/2399.jpg',
+                                  'img/IAPS/Negative/2455.f.jpg',
+                                  'img/IAPS/Negative/2455.jpg',
+                                  'img/IAPS/Negative/2490.f.jpg',
+                                  'img/IAPS/Negative/2490.jpg',
+                                  'img/IAPS/Negative/2590.f.jpg',
+                                  'img/IAPS/Negative/2590.jpg',
+                                  'img/IAPS/Negative/2694.f.jpg',
+                                  'img/IAPS/Negative/2694.jpg',
+                                  'img/IAPS/Negative/2700.f.jpg',
+                                  'img/IAPS/Negative/2700.jpg',
+                                  'img/IAPS/Negative/2710.f.jpg',
+                                  'img/IAPS/Negative/2710.jpg',
+                                  'img/IAPS/Negative/2718.f.jpg',
+                                  'img/IAPS/Negative/2718.jpg',
+                                  'img/IAPS/Negative/2745.2.f.jpg',
+                                  'img/IAPS/Negative/2745.2.jpg',
+                                  'img/IAPS/Negative/2750.f.jpg',
+                                  'img/IAPS/Negative/2750.jpg',
+                                  'img/IAPS/Negative/2753.f.jpg',
+                                  'img/IAPS/Negative/2753.jpg',
+                                  'img/IAPS/Negative/2900.f.jpg',
+                                  'img/IAPS/Negative/2900.jpg',
+                                  'img/IAPS/Negative/3017.f.jpg',
+                                  'img/IAPS/Negative/3017.jpg',
+                                  'img/IAPS/Negative/3160.f.jpg',
+                                  'img/IAPS/Negative/3160.jpg',
+                                  'img/IAPS/Negative/3215.f.jpg',
+                                  'img/IAPS/Negative/3215.jpg',
+                                  'img/IAPS/Negative/3216.f.jpg',
+                                  'img/IAPS/Negative/3216.jpg',
+                                  'img/IAPS/Negative/3220.f.jpg',
+                                  'img/IAPS/Negative/3220.jpg',
+                                  'img/IAPS/Negative/3280.f.jpg',
+                                  'img/IAPS/Negative/3280.jpg',
+                                  'img/IAPS/Negative/3300.f.jpg',
+                                  'img/IAPS/Negative/3300.jpg',
+                                  'img/IAPS/Negative/4621.f.jpg',
+                                  'img/IAPS/Negative/4621.jpg',
+                                  'img/IAPS/Negative/6010.f.jpg',
+                                  'img/IAPS/Negative/6010.jpg',
+                                  'img/IAPS/Negative/6242.f.jpg',
+                                  'img/IAPS/Negative/6242.jpg',
+                                  'img/IAPS/Negative/6311.f.jpg',
+                                  'img/IAPS/Negative/6311.jpg',
+                                  'img/IAPS/Negative/6562.f.jpg',
+                                  'img/IAPS/Negative/6562.jpg',
+                                  'img/IAPS/Negative/6571.f.jpg',
+                                  'img/IAPS/Negative/6571.jpg',
+                                  'img/IAPS/Negative/6825.f.jpg',
+                                  'img/IAPS/Negative/6825.jpg',
+                                  'img/IAPS/Negative/6831.f.jpg',
+                                  'img/IAPS/Negative/6831.jpg',
+                                  'img/IAPS/Negative/6836.f.jpg',
+                                  'img/IAPS/Negative/6836.jpg',
+                                  'img/IAPS/Negative/8231.f.jpg',
+                                  'img/IAPS/Negative/8231.jpg',
+                                  'img/IAPS/Negative/9007.f.jpg',
+                                  'img/IAPS/Negative/9007.jpg',
+                                  'img/IAPS/Negative/9041.f.jpg',
+                                  'img/IAPS/Negative/9041.jpg',
+                                  'img/IAPS/Negative/9046.f.jpg',
+                                  'img/IAPS/Negative/9046.jpg',
+                                  'img/IAPS/Negative/9190.f.jpg',
+                                  'img/IAPS/Negative/9190.jpg',
+                                  'img/IAPS/Negative/9265.f.jpg',
+                                  'img/IAPS/Negative/9265.jpg',
+                                  'img/IAPS/Negative/9270.f.jpg',
+                                  'img/IAPS/Negative/9270.jpg',
+                                  'img/IAPS/Negative/9331.f.jpg',
+                                  'img/IAPS/Negative/9331.jpg',
+                                  'img/IAPS/Negative/9341.f.jpg',
+                                  'img/IAPS/Negative/9341.jpg',
+                                  'img/IAPS/Negative/9404.f.jpg',
+                                  'img/IAPS/Negative/9404.jpg',
+                                  'img/IAPS/Negative/9415.f.jpg',
+                                  'img/IAPS/Negative/9415.jpg',
+                                  'img/IAPS/Negative/9417.f.jpg',
+                                  'img/IAPS/Negative/9417.jpg',
+                                  'img/IAPS/Negative/9419.f.jpg',
+                                  'img/IAPS/Negative/9419.jpg',
+                                  'img/IAPS/Negative/9426.f.jpg',
+                                  'img/IAPS/Negative/9426.jpg',
+                                  'img/IAPS/Negative/9427.f.jpg',
+                                  'img/IAPS/Negative/9427.jpg',
+                                  'img/IAPS/Negative/9430.f.jpg',
+                                  'img/IAPS/Negative/9430.jpg',
+                                  'img/IAPS/Negative/9452.f.jpg',
+                                  'img/IAPS/Negative/9452.jpg',
+                                  'img/IAPS/Negative/9490.f.jpg',
+                                  'img/IAPS/Negative/9490.jpg',
+                                  'img/IAPS/Negative/9520.f.jpg',
+                                  'img/IAPS/Negative/9520.jpg',
+                                  'img/IAPS/Negative/9530.f.jpg',
+                                  'img/IAPS/Negative/9530.jpg',
+                                  'img/IAPS/Negative/9584.f.jpg',
+                                  'img/IAPS/Negative/9584.jpg',
+                                  'img/IAPS/Negative/9900.f.jpg',
+                                  'img/IAPS/Negative/9900.jpg',
+                                  'img/IAPS/Negative/9926.f.jpg',
+                                  'img/IAPS/Negative/9926.jpg',
+                                    ];
+
+    var logo_size = 300; // pixelscc
+    var image_size = 500;
+
+    // make the experiment to be fullscreen to avoid distractions
+    timeline.push({
+      type: 'fullscreen',
+      fullscreen_mode: true
+    });
 
     // set up which keys to press for answering
     let choices = ["c", "n"];
@@ -82,7 +320,7 @@
         teamLeft: '',
         teamRight: '',
         IAPSconditionSelected: '',
-        pointsTotal: 0.2
+        pointsTotal: 0
     };
 
     // assign team logos to teams randomly. This ensures that across participants, different "logos" play against each other.
@@ -101,7 +339,7 @@
     /* define welcome message*/
     var welcome = {
         type: "html-keyboard-response",
-        stimulus: "<h1>Welcome!</h1>" +
+        stimulus: "<h1>The Fictional Football Match Game</h1>" +
             "<p>Thank you for taking your time to participate in this study! </p><h2>Press any key to start</h2>"
     };
     timeline.push(welcome);
@@ -117,71 +355,11 @@
     };
     timeline.push(instructions1);
 
-    var instructions2 = {
-        type: 'instructions',
-        pages: ["<h1>&#x26BD</h1><p>This game is about guessing which fictional football teams will win a hypothetical match. <br>To start, take a look at the logos of these fictional teams.</p>" +
-
-            "<h2><br>Press space to see the team logos</h2>"],
-        key_forward: 32, // code for space
-        show_clickable_nav: false
-    };
-    timeline.push(instructions2);
-
-    var teamA_demo = {
-        type: 'image-keyboard-response',
-        stimulus: teamA,
-        stimulus_height: 300,
-        choices: [32],
-        prompt: "<h2><br>Press space to see the next one</h2>",
-        stimulus_duration: null,
-        trial_duration: null,
-        response_ends_trial: true
-    };
-    timeline.push(teamA_demo);
-
-    var teamB_demo = {
-        type: 'image-keyboard-response',
-        stimulus: teamB,
-        stimulus_height: 300,
-        choices: [32],
-        prompt: "<h2><br>Press space to see the next one</h2>",
-        stimulus_duration: null,
-        trial_duration: null,
-        response_ends_trial: true
-    };
-    timeline.push(teamB_demo);
-
-    var teamC_demo = {
-        type: 'image-keyboard-response',
-        stimulus: teamC,
-        stimulus_height: 300,
-        choices: [32],
-        prompt: "<h2><br>Press space to see the next one</h2>",
-        stimulus_duration: null,
-        trial_duration: null,
-        response_ends_trial: true
-    };
-    timeline.push(teamC_demo);
-
-    var teamD_demo = {
-        type: 'image-keyboard-response',
-        stimulus: teamD,
-        stimulus_height: 300,
-        choices: [32],
-        prompt: "<p><br>That's the 4.</p><h2>Press space to continue</h2>",
-        stimulus_duration: null,
-        trial_duration: null,
-        response_ends_trial: true
-    };
-    timeline.push(teamD_demo);
-
     var instructions3 = {
         type: 'instructions',
-        pages: ["<h1>&#x2714</h1><p>Now you know the logos.</p>"+
+        pages: ["<h1>&#x26BD</h1><p>This game is about <b>guessing which fictional football team won</b> a hypothetical match.</p>"+
 
-        "<h3>Let us tell you more about these teams</h3> <p>These teams played in a mini-league. <br>That is, the same two teams played against each other over an entire season.</p>" +
-
-        "<p>You will see the two teams that played in each match – <br>from the start of the season to the end of the season.</p>"+
+        "<p>The teams played in a mini-league. <br>The same two teams played against each other over an entire season.</p>" +
 
         "<h2><br>Press space to see the matches</h2>"],
         key_forward: 32, // code for space
@@ -194,7 +372,7 @@
         [teamA, 0, teamB]
     ];
 
-    var teamsAB_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsAB, [image_size, image_size]);
+    var teamsAB_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsAB, [logo_size, logo_size]);
 
     var teamsAB_demo = {
         type: 'html-keyboard-response',
@@ -203,7 +381,7 @@
         prompt: "<h2>Press space to see the next match</h2>",
         stimulus_duration: null,
         trial_duration: null,
-        response_ends_trial: true
+        response_ends_trial: true //displayed until space is pressed
     };
     timeline.push(teamsAB_demo);
 
@@ -211,14 +389,13 @@
         [teamC, 0,  teamD]
     ];
 
-    var teamsCD_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsCD, [image_size, image_size]);
+    var teamsCD_demo_prep = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(teamsCD, [logo_size, logo_size]);
 
     var teamsCD_demo = {
         type: 'html-keyboard-response',
         stimulus: teamsCD_demo_prep,
         choices: [32],
-        prompt: "<h2>Press space to continue</h2>",
-        //stimulus_duration: stimulusDuration,
+        prompt: "<p>That's it!</p><h2>Press space to continue</h2>",
         trial_duration: null,
         response_ends_trial: true
     };
@@ -227,9 +404,9 @@
     var instructions4 = {
         type: 'instructions',
         pages: ["<h1>&#x1F3C6</h1>"+
-          "<h3>Your job is simple: <br>you have to guess which team won each match</h3>"+
+          "<h2>Your job is simple: <br>guess which team won each match</h2>"+
 
-            "<h4>How do you make the guess?</h4> <p>Select the team that you think was most likely to win that match. <br>Do this by selecting the logo: <br><b>C-key = team on the left. N-key = team on the right.</b></p>" +
+            "<p>Select the team that you think was most likely to win that match. <br>Do this by pressing the right key: <br><b>C-key = team on the left.       N-key = team on the right.</b></p>" +
 
             "<h2><br>Press space to continue</h2>"],
         key_forward: 32, // code for space
@@ -242,7 +419,7 @@
         pages: [
             "<h1>&#x1F4B0</h1>" +
             "<p>Correct guesses will win you some (hypothetical) cash: <br><b>£0.10</b> to be precise. <br>If you guess wrong, don't worry - you won't lose any money.</p>" +
-            "<p><b>Your goal is to earn as much fictional £££ as possible.</b></p>" +
+            "<p><b>Your goal is to earn as much fictional £££ as possible</b> by the end of the season.</p>" +
 
             "<h2><br>Press space to continue</h2>"],
         key_forward: 32, // code for space
@@ -255,8 +432,8 @@
         type: 'instructions',
         pages: [
             "<h1>&#x1F945</h1>" +
-            "<p>At first, you might not be sure who was likely to win <br>but <b>soon you might develop an idea about which team is stronger</b> than another at a given time in the season.<p>"+
-            "<p><b>Stay focused:</b> <br>teams may improve or deteriorate over time. <br>Use the feedback provided to guess the winner and win non-real £££.</p>" +
+            "<p>At first, you might not be sure who was likely to win but <br><b>soon you might develop an idea about which team was stronger</b> at a given time in the season.<p>"+
+            "<p><b>Stay focused:</b> <br>teams may have improved or deteriorated over time. <br>Use the feedback provided to guess the winner and win non-real £££.</p>" +
 
             "<h2><br>Press space to continue</h2>"],
         key_forward: 32, // code for space
@@ -288,19 +465,21 @@
 
     // Set up elements that are universal across the task
 
-    // Gets triggered when response in the 5 last trials has been slower than 500ms. Only kicks in after 6 trials (including the choosing trials) have run
+    // Gets triggered when response in the 5 last trials has been slower than 700ms.
+    // It was initially 500ms but testing showed it was too quick and annoyed people.
+    // Only kicks in after 6 trials have run.
       var too_slow_message = {
           type: 'html-keyboard-response',
-          stimulus: '<span style="color:#ef476f;font-size:30px;">Please respond faster</span>',
+          stimulus: '<h1 style="color:#ef476f;">Please respond faster</h1>',
           trial_duration: errorDuration
       };
 
       var display_too_slow_message_conditional = {
           timeline: [too_slow_message],
           conditional_function: function() {
-            if (Phase1_trialnumber > 6) {
+            if (currentTrialNumber > 6) {
               var meanrt_last5trials = jsPsych.data.get().filter({trial_element: 'match'}).last(5).select('rt').mean(); // takes the last 5 trials where choice needs to be made (labeled as match trials)
-              if (meanrt_last5trials > 500) { // gets triggered if RT has been more than 500ms
+              if (meanrt_last5trials > 700) { // gets triggered if RT has been more than 700ms
                 display_too_slow_message = true;
                 console.log('I am being too slow. RT so far: ' + meanrt_last5trials);
                 return true;
@@ -310,7 +489,7 @@
                 return false;
               }
             } else {
-            console.log('trial number not yet 5. Current one: ' + Phase1_trialnumber);
+            console.log('trial number not yet 5. Current one: ' + currentTrialNumber);
             return false;
             }
           }
@@ -329,10 +508,11 @@
       var display_haveabreak_message_conditional = {
           timeline: [instructions_break1],
           conditional_function: function() {
+              if (currentTrialNumber > 2) {
               var trial_totalmisses = jsPsych.data.get().filter({trial_element: 'match', key_press: null}).count(); // this is just to test the function in console. It has no functionality for the function and can be deleted.
               var trial_last3matches = jsPsych.data.get().filter({trial_element: 'match'}).last(3); // count the last 3 trials that are matches (ie where keypress is needed):
               var trial_last3matches_misses = trial_last3matches.filter({key_press: null}).count(); // count the number of times where there were no keypress (a proxy that the participant may not be paying attention);
-              console.log('trials misses ' + trial_totalmisses + ' out of ' + Phase1_trialnumber + ' trials. Number of trials missed in the last 3: ' + trial_last3matches_misses);
+              console.log('trials misses ' + trial_totalmisses + ' out of ' + currentTrialNumber + ' trials. Number of trials missed in the last 3: ' + trial_last3matches_misses);
               if (trial_last3matches_misses  == 3) { // gets triggered if missed at least 3 trials
                 display_haveabreak_message = true;
                 console.log('Should I have a break? I have missed many trials: ' + trial_last3matches_misses);
@@ -341,6 +521,10 @@
                 display_haveabreak_message = false;
                 console.log('No need for a break! Only missed few trials: ' + trial_last3matches_misses);
                 return false;
+              }
+              } else {
+              console.log('trial number not yet 3. Current one: ' + currentTrialNumber);
+              return false;
               }
             },
       };
@@ -353,30 +537,34 @@
         trial_duration: fixationDuration
     }
 
-    // choose which order of affective information will be displayed
+    // choose which which affective condition comes first
     var IAPSconditions = ['neg', 'neu'];
     var shuffleIAPSconditions = jsPsych.randomization.shuffle(IAPSconditions);
     var IAPScondition1 = shuffleIAPSconditions[0];
     var IAPScondition2 = shuffleIAPSconditions[1];
 
+    // shuffle IAPS images so that the order is different for each participant
+    var shuffleIAPSneg = jsPsych.randomization.shuffle(photoDatabase_neg_trial)
+    var shuffleIAPSneu = jsPsych.randomization.shuffle(photoDatabase_neu_trial)
+
     function choose_IAPSimage() {
       console.log('condition: ', IAPScondition1);
       if (IAPScondition1 == 'neg') {
-        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neg_trial, 1);
+        IAPSimage = shuffleIAPSneg[currentTrialNumber-1]; // -1 because javascript starts indexing with 0
       } else {
-        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neu_trial, 1);
+        IAPSimage = shuffleIAPSneu[currentTrialNumber-1]; // -1 because javascript starts indexing with 0
       };
       console.log('image selected: ', IAPSimage);
-      return [[0, IAPSimage, 0]];
+      return [[IAPSimage]];
     }
 
-    // now show an image, either negative or neutral as selected before
+    // now show an image, either negative or neutral as selected above
     var pick_IAPSimage = {
       type: 'html-keyboard-response',
       stimulus: function() {
         // need to wrap all of this in a function so that it runs on every repetition of the trial
         var curr_image = choose_IAPSimage();
-        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size, image_size]);
+        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size]);
       },
       choices: jsPsych.NO_KEYS,
       prompt: "",
@@ -390,142 +578,20 @@
       },
     };
 
-    // set up the matches
-    function chooseLayout_pickAB() {
-        // create an array of all teams
-        var teams = [teamA, teamB];
-        // pick layout at random so all are equally likely
-        var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
-        console.log('logo on the left: ', layoutSelected);
-        if (layoutSelected == teamA) {
-            trialInfo_teamLeft = teamA; // adding trialInfo_Phase1 so that this can be accessed outside the function
-            trialInfo_teamRight = teamB;
-        } else {
-            trialInfo_teamLeft = teamB;
-            trialInfo_teamRight = teamA;
-        };
-        return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
-    }
+    // pick the winner for the first phase at random
+    var ABmatches = [teamA, teamB];
+    var shuffleABmatches = jsPsych.randomization.shuffle(ABmatches);
+    var phase1WinnerAB = shuffleABmatches[1];
+    var phase1LoserAB = shuffleABmatches[0];
+    console.log('phase 1 winner AB: ', phase1WinnerAB);
+    console.log('phase 1 loser AB: ', phase1LoserAB);
 
-    var match_pickAB = {
-        type: 'html-keyboard-response',
-        stimulus: function() {
-            // This has to be wrapped in a function, otherwise 'chooseLayout_phase1_pickAB' and 'chooseLayout_phase1_pickCD' functions
-            // will both run immediately when the page loads, rather than _during_ the task, which is a problem because these
-            // two functions both modify the global 'trialInfo' object. When this happens, the 'trialInfo' object is modified with the info
-            // for the CD match before the experiment starts, and so it contains the wrong information during this trial.
-            return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(chooseLayout_pickAB(), [image_size, image_size]);
-        },
-        choices: choices,
-        prompt: "Who will win? Press C or N",
-        data: function () {
-            return {
-                phase: 1,
-                trial_element: "match",
-                trialNumber: Phase1_trialnumber,
-                teamLeft: trialInfo_teamLeft,
-                teamRight: trialInfo_teamRight,
-                points_cumulative_excludingThisTrial: jsPsych.timelineVariable('trialInfo.pointsTotal')
-            };
-        },
-        on_finish: function (data) {
-            console.log('trial info phase 1 AB: ', trialInfo);
-            data.accuracy = true;
-            Phase1_trialnumber += 1;
-            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
-                phase1WinnerAB = trialInfo_teamLeft;
-                phase1LoserAB = trialInfo_teamRight;
-            } else {
-                phase1WinnerAB = trialInfo_teamRight;
-                phase1LoserAB = trialInfo_teamLeft;
-            }
-            console.log('phase 1 winner AB: ', phase1WinnerAB);
-            console.log('phase 1 loser AB: ', phase1LoserAB);
-        }
-    };
-
-    var points_tracker_pickAB = {
-        type: 'html-keyboard-response',
-        stimulus: function () {
-            var points_feedback = '<span style="color:#584b53;font-size:20px;">£0.00</span>';
-            var last_match_correct = jsPsych.data.getLastTrialData().values()[0].accuracy;
-            if (last_match_correct == true) {
-                points_feedback = '<span style="color:#06d6a0;font-size:20px;">+ £0.10</span>'
-            }
-            return points_feedback;
-        },
-        trial_duration: feedbackDuration
-    };
-
-    function chooseLayout_pickCD() {
-        // create an array of all teams
-        var teams = [teamC, teamD];
-        // pick layout at random so all are equally likely
-        var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
-        if (layoutSelected == teamC) {
-            trialInfo_teamLeft = teamC; // adding trialInfo_Phase1 so that this can be accessed outside the function
-            trialInfo_teamRight = teamD;
-        } else {
-            trialInfo_teamLeft = teamD;
-            trialInfo_teamRight = teamC;
-        };
-        return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
-    }
-
-    var match_pickCD = {
-        type: 'html-keyboard-response',
-        stimulus: function() {
-            // As with match_phase1_pickCD, this has to be wrapped in a function, otherwise the 'chooseLayout_phase1_pickCD' function
-            // will run immediately when the page loads, rather than _during_ the task, which is a problem because it
-            // modifies the global 'trialInfo' object. When this happens, the 'trialInfo' object is modified with the info
-            // for this CD match before the experiment starts, and so it contains the wrong information during the earlier pick AB trial.
-            return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(chooseLayout_pickCD(), [image_size, image_size]);
-        },
-        choices: choices,
-        prompt: "Who will win? Press C or N",
-        data: function() {
-            return {
-                phase: 1,
-                trial_element: "match",
-                trialNumber: Phase1_trialnumber,
-                teamLeft: trialInfo_teamLeft,
-                teamRight: trialInfo_teamRight,
-                points_cumulative_excludingThisTrial: trialInfo.pointsTotal
-            };
-        },
-        on_finish: function (data) {
-            console.log('trial info phase 1 CD: ', trialInfo);
-            data.accuracy = true;
-            Phase1_trialnumber += 1;
-            if (jsPsych.pluginAPI.convertKeyCodeToKeyCharacter(data.key_press) == "c") {
-                phase1WinnerCD = trialInfo_teamLeft;
-                phase1LoserCD = trialInfo_teamRight;
-            } else {
-                phase1WinnerCD = trialInfo_teamRight;
-                phase1LoserCD = trialInfo_teamLeft;
-            }
-            console.log('phase 1 winner CD: ', phase1WinnerCD);
-            console.log('phase 1 loser CD: ', phase1LoserCD);
-        }
-    };
-
-    var points_tracker_pickCD = {
-        type: 'html-keyboard-response',
-        stimulus: function () {
-            var points_feedback = '<span style="color:#584b53;font-size:20px;">£0.00</span>';
-            var last_match_correct = jsPsych.data.getLastTrialData().values()[0].accuracy;
-            if (last_match_correct == true) {
-                points_feedback = '<span style="color:#06d6a0;font-size:20px;">+ £0.10</span>'
-            }
-            return points_feedback;
-        },
-        trial_duration: feedbackDuration
-    };
-
-    var trial_procedure_phase1_picking = {
-        timeline: [fixation, pick_IAPSimage, match_pickAB, points_tracker_pickAB, fixation, pick_IAPSimage, match_pickCD, points_tracker_pickCD]
-    };
-    timeline.push(trial_procedure_phase1_picking);
+    var CDmatches = [teamC, teamD];
+    var shuffleCDmatches = jsPsych.randomization.shuffle(CDmatches);
+    var phase1WinnerCD = shuffleCDmatches[1];
+    var phase1LoserCD = shuffleCDmatches[0];
+    console.log('phase 1 winner CD: ', phase1WinnerCD);
+    console.log('phase 1 loser CD: ', phase1LoserCD);
 
     //////// PHASE 1 ///////
     //set up trial Phase1 1. numberOfTrials controls how many times this thing loops.
@@ -536,7 +602,8 @@
         if (matchType == 'ab') {
             // create an array of all teams
             var teams = [teamA, teamB];
-            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
+            // pick layout at random so all are equally likely.
+            //That is, pick the team that is on the left. The other one is then on the right.
             var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
             if (layoutSelected == teamA) {
                 trialInfo_teamLeft = teamA;
@@ -545,7 +612,7 @@
                 trialInfo_teamLeft = teamB;
                 trialInfo_teamRight = teamA
             }
-            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]]; //this set-up is so it'd match with the format the jsPsych plugin needs to display the images
         } else {
             // create an array of teams
             var teams = [teamC, teamD];
@@ -568,7 +635,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase1('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -579,7 +646,7 @@
                 phase: 1,
                 trial_element: "match",
                 condition: IAPScondition1,
-                trialNumber: Phase1_trialnumber,
+                PhaseTrialNumber: Phase1_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
                 phase1Winner: phase1WinnerAB,
@@ -588,6 +655,7 @@
         },
         on_finish: function(data) {
             Phase1_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerAB, phase1LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
@@ -608,9 +676,6 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
-            // but I took this out because it didn't make sense to me
-            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -633,7 +698,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase1('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -651,8 +716,9 @@
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
-        on_finish: function (data) {
+        on_finish: function(data) {
             Phase1_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerCD, phase1LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
@@ -750,7 +816,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase2('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -770,6 +836,7 @@
         },
         on_finish: function(data) {
             Phase2_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerAB, phase1LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
@@ -790,9 +857,6 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
-            // but I took this out because it didn't make sense to me
-            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -815,7 +879,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase2('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -835,6 +899,7 @@
         },
         on_finish: function (data) {
             Phase2_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerCD, phase1LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
@@ -917,7 +982,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase3('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -937,6 +1002,7 @@
         },
         on_finish: function(data) {
             Phase3_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerAB, phase1LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
@@ -957,9 +1023,6 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
-            // but I took this out because it didn't make sense to me
-            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -982,7 +1045,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase3('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1000,8 +1063,9 @@
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
-        on_finish: function (data) {
+        on_finish: function(data) {
             Phase3_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerCD, phase1LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
@@ -1052,17 +1116,31 @@
     timeline.push(instructions_break1);
 
 
-    //////// PHASE 4 ////////
+    // pick the winner for the fourth phase at random
+    var shuffleABmatches = jsPsych.randomization.shuffle(ABmatches);
+    var phase4WinnerAB = shuffleABmatches[1];
+    var phase4LoserAB = shuffleABmatches[0];
+    console.log('phase 4 winner AB: ', phase4WinnerAB);
+    console.log('phase 4 loser AB: ', phase4LoserAB);
 
+    var shuffleCDmatches = jsPsych.randomization.shuffle(CDmatches);
+    var phase4WinnerCD = shuffleCDmatches[1];
+    var phase4LoserCD = shuffleCDmatches[0];
+    console.log('phase 4 winner CD: ', phase4WinnerCD);
+    console.log('phase 4 loser CD: ', phase4LoserCD);
+
+
+
+    //////// PHASE 4 ////////
     function choose_IAPSimage2() {
       console.log('starting condition: ', IAPScondition2);
       if (IAPScondition2 == 'neg') {
-        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neg_trial, 1);
+        IAPSimage = IAPSimage = shuffleIAPSneg[currentTrialNumber-114-1]; //There are 118 negative images and the previous part had 19*2*3=114 trials, so I'm resetting the counter that picks images from the random array that was created at the start of the trial
       } else {
-        IAPSimage = jsPsych.randomization.sampleWithReplacement(photoDatabase_neu_trial, 1);
+        IAPSimage = IAPSimage = shuffleIAPSneu[currentTrialNumber-114-1]; //There are 114 neutral images and the previous part had 19*2*3=114 trials, so I'm resetting the counter that picks images from the random array that was created at the start of the trial
       };
       console.log('image selected: ', IAPSimage);
-      return [[0, IAPSimage, 0]];
+      return [[IAPSimage]];
     }
 
     var pick_IAPSimage2 = {
@@ -1070,7 +1148,7 @@
       stimulus: function() {
         // need to wrap all of this in a function so that it runs on every repetition of the trial
         var curr_image = choose_IAPSimage2();
-        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size, image_size]);
+        return jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_image, [image_size]);
       },
       choices: jsPsych.NO_KEYS,
       prompt: "",
@@ -1118,13 +1196,13 @@
         }
     }
 
-    // set up A-B trial for use in phase 1 looping trial procedure
+    // set up A-B trial for use in phase 4 looping trial procedure
     var match_phase4_subsequentAB = {
         type: 'html-keyboard-response',
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase4('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1138,14 +1216,15 @@
                 trialNumber: Phase4_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase4Winner: phase1WinnerAB,
+                phase4Winner: phase4WinnerAB,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
         on_finish: function(data) {
             Phase4_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchPlayers = [phase4WinnerAB, phase4LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1164,9 +1243,6 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
-            // but I took this out because it didn't make sense to me
-            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -1189,7 +1265,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase4('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1203,14 +1279,15 @@
                 trialNumber: Phase4_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase4Winner: phase1WinnerCD,
+                phase4Winner: phase4WinnerCD,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
-        on_finish: function (data) {
+        on_finish: function(data) {
             Phase4_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchPlayers = [phase4WinnerCD, phase4LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1284,13 +1361,13 @@
         }
     }
 
-    // set up A-B trial for use in phase 1 looping trial procedure
+    // set up A-B trial for use in phase 5 looping trial procedure
     var match_phase5_subsequentAB = {
         type: 'html-keyboard-response',
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase5('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1304,14 +1381,15 @@
                 trialNumber: Phase5_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase5Winner: phase1LoserAB,
+                phase5Winner: phase4LoserAB,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
         on_finish: function(data) {
             Phase5_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchPlayers = [phase4WinnerAB, phase4LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1330,9 +1408,6 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // NOTE: you initially had this condition in your conditional: matchOutcome == phase1WinnerAB
-            // but I took this out because it didn't make sense to me
-            // (I think the phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often - right?)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -1355,7 +1430,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase5('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1369,14 +1444,15 @@
                 trialNumber: Phase5_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase5Winner: phase1LoserCD,
+                phase5Winner: phase4LoserCD,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
-        on_finish: function (data) {
+        on_finish: function(data) {
             Phase5_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchPlayers = [phase4WinnerCD, phase4LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [20, 80])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1395,7 +1471,7 @@
             data.selected_team = selected_team;
 
             // compare the winning team with the selected team
-            // phase 1 winner/loser is just used to set the sampling weights so that the winner is selected more often)
+            // phase 4 winner/loser is just used to set the sampling weights so that the winner is selected more often)
             if (selected_team == matchOutcome) {
                 console.log('correct selection');
                 data.accuracy = true;
@@ -1456,7 +1532,7 @@
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase6('ab');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1470,14 +1546,15 @@
                 trialNumber: Phase6_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase6Winner: phase1WinnerAB,
+                phase6Winner: phase4WinnerAB,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
         on_finish: function(data) {
             Phase6_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerAB, phase1LoserAB];
+            var matchPlayers = [phase4WinnerAB, phase4LoserAB];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1512,13 +1589,13 @@
         }
     };
 
-    // set up C-D trial for use in phase 3 looping trial procedure
+    // set up C-D trial for use in phase 6 looping trial procedure
     var match_phase6_subsequentCD = {
         type: 'html-keyboard-response',
         stimulus: function() {
             // need to wrap all of this in a function so that it runs on every repetition of the trial
             var curr_layout = chooseLayout_subsequent_Phase6('cd');
-            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [image_size, image_size]);
+            var vsl_layout = jsPsych.plugins['vsl-grid-scene'].generate_stimulus(curr_layout, [logo_size, logo_size]);
             return vsl_layout;
         },
         choices: choices,
@@ -1532,14 +1609,15 @@
                 trialNumber: Phase3_trialnumber,
                 teamLeft: trialInfo_teamLeft,
                 teamRight: trialInfo_teamRight,
-                phase6Winner: phase1WinnerCD,
+                phase6Winner: phase4WinnerCD,
                 points_cumulative_excludingThisTrial: jsPsych.data.get().select('pointsTotal').max()
             };
         },
-        on_finish: function (data) {
+        on_finish: function(data) {
             Phase6_trialnumber += 1;
+            currentTrialNumber += 1;
             // choose the winner
-            var matchPlayers = [phase1WinnerCD, phase1LoserCD];
+            var matchPlayers = [phase4WinnerCD, phase4LoserCD];
             var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
@@ -1580,7 +1658,7 @@
     // add phase 6 looping procedure to the main timeline
     timeline.push(trial_procedure_phase6_loop);
 
-    // add end message
+    // add end message and show how much money participant "won"
     var endMessage = {
         type: 'html-keyboard-response',
         stimulus: function () {
@@ -1593,17 +1671,29 @@
     };
     timeline.push(endMessage)
 
-    jsPsych.init({
-        timeline: timeline,
-        show_progress_bar: true,
-        preload_images: [photoDatabase_neu_trial, photoDatabase_neg_trial], // preload images so that the experiment runs well
-        show_preload_progress_bar: false, //hide preload progress bar
-        on_finish: function () {
-            jsPsych.data.displayData();
-            jsPsych.data.get().localSave("csv","learningtask_data.csv")
-        }
+    jatos.onLoad(function() {
+
+      jsPsych.data.addProperties({
+        jatos_study_ID: jatos.studyId,
+        jatos_component_ID: jatos.componentId,
+        jatos_component_result_ID: jatos.componentResultId,
+        jatos_worker_ID: jatos.workerId,
+        jatos_study_result_ID: jatos.studyResultId,
+      });
+
+
+      jsPsych.init({
+          timeline: timeline,
+          show_progress_bar: false,
+          preload_images: [photoDatabase_neu_trial, photoDatabase_neg_trial, logo1, logo2, logo3, logo4], // preload images so that the experiment runs well
+          show_preload_progress_bar: true, //hide preload progress bar
+          on_finish: function() {
+              // jsPsych.data.displayData();
+              var result_json = jsPsych.data.get().json() + jsPsych.data.getInteractionData().json(); // This added on part after the + is to send browser interactions to JATOS in addition to trial data
+              jatos.submitResultData(result_json, jatos.startNextComponent);
+          }
+      });
     });
 
 </script>
-
 </html>
