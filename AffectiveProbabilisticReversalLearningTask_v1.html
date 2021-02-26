@@ -2,8 +2,11 @@
 When using this work, or any part of it, please cite it:
 Maris Vainre, Becky Gilbert & Marc Bennett. Affective Probabilistic Reversal Learning Task using jsPsych. Github repository.
 https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
+
 <!DOCTYPE html>
+
 <html>
+
 <head>
     <title>SWELL: The Fictional Football Cup</title>
     <script src = "js/jquery.min.js" type="text/javascript"></script>
@@ -13,8 +16,8 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     <script src="jspsych/plugins/jspsych-image-keyboard-response.js"></script>
     <script src="jspsych/plugins/jspsych-vsl-grid-scene.js"></script>
     <script src="jspsych/plugins/jspsych-fullscreen.js"></script>
-    <script src = "jatos.js"></script> /* uncomment all jatos-related lines to run outside jatos
-    <link href="css/SwellStyle.css" rel="stylesheet" type="text/css"> /* this may need changing for the script to run
+    <script src = "jatos.js"></script>
+    <link href="css/SwellStyle.css" rel="stylesheet" type="text/css">
     <meta charset="utf-8">
     <style>
         /* here's the CSS if you want to change the padding around the images */
@@ -40,7 +43,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     // set up how many trials are run per phase, the actual matches will be double that.
     var numberOfTrials = 19; //19 here due to number of images available
 
-    //set up durations
+    //set up duration
     var fixationDuration = 300;
     var IAPSduration = 1500;
     var stimulusDuration = 2000;
@@ -385,7 +388,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
         prompt: "<h2>Press space to see the next match</h2>",
         stimulus_duration: null,
         trial_duration: null,
-        response_ends_trial: true //displayed until space is pressed
+        response_ends_trial: true
     };
     timeline.push(teamsAB_demo);
 
@@ -400,6 +403,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
         stimulus: teamsCD_demo_prep,
         choices: [32],
         prompt: "<p>That's it!</p><h2>Press space to continue</h2>",
+        //stimulus_duration: stimulusDuration,
         trial_duration: null,
         response_ends_trial: true
     };
@@ -435,9 +439,8 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     var instructions6 = {
         type: 'instructions',
         pages: [
-            "<h1>&#x1F945</h1>" +
-            "<p>At first, you might not be sure who was likely to win but <br><b>soon you might develop an idea about which team was stronger</b> at a given time in the season.<p>"+
-            "<p><b>Stay focused:</b> <br>teams may have improved or deteriorated over time. <br>Use the feedback provided to guess the winner and win non-real £££.</p>" +
+            "<h1>&#x1F914</h1>" +
+            "<p>At first, you might not be sure who was likely to win but <br><b>soon you might develop an idea about which team was stronger</b> <br>at a given time in the season.<p>"+
 
             "<h2><br>Press space to continue</h2>"],
         key_forward: 32, // code for space
@@ -448,15 +451,27 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     var instructions7 = {
         type: 'instructions',
         pages: [
-            "<p>Also, before each match, you'll see a photo. It's there to keep you alert. <br>It won't predict the result of the match.</p>"+
+            "<h1>&#x1F945<br>Stay focused!</h1>" +
+            "<p>While <b>one team is always much more likely to win</b> than the other, <br>the good team may have had a particularly bad game or <br>they may be going through a bad patch so the other team is more likely to win. <br><br>Use the feedback provided to guess the winner and <br>win as much non-real £££ as you can.</p>" +
+
             "<h2><br>Press space to continue</h2>"],
         key_forward: 32, // code for space
         show_clickable_nav: false
     };
     timeline.push(instructions7);
 
-
     var instructions8 = {
+        type: 'instructions',
+        pages: [
+            "<p>Also, before each match, you'll see a photo. It's there to keep you alert. <br>It won't predict the result of the match.</p>"+
+            "<h2><br>Press space to continue</h2>"],
+        key_forward: 32, // code for space
+        show_clickable_nav: false
+    };
+    timeline.push(instructions8);
+
+
+    var instructions9 = {
         type: 'instructions',
         pages: ["<h1>&#x23F1</h1>"+
             "<h2>Try to be <b>as quick as possible</b> in your responses</h2>"+
@@ -465,12 +480,12 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
         key_forward: 32, // code for space
         show_clickable_nav: false
     };
-    timeline.push(instructions8);
+    timeline.push(instructions9);
 
     // Set up elements that are universal across the task
 
-    // Gets triggered when response in the 5 last trials has been slower than 700ms.
-    // It was initially 500ms but testing showed it was too quick and annoyed people.
+    // Gets triggered when response in the 5 last trials has been slower than 1200ms.
+    // It was initially 500ms and then 700ms but testing showed it was too quick and annoyed people.
     // Only kicks in after 6 trials have run.
       var too_slow_message = {
           type: 'html-keyboard-response',
@@ -483,7 +498,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
           conditional_function: function() {
             if (currentTrialNumber > 6) {
               var meanrt_last5trials = jsPsych.data.get().filter({trial_element: 'match'}).last(5).select('rt').mean(); // takes the last 5 trials where choice needs to be made (labeled as match trials)
-              if (meanrt_last5trials > 700) { // gets triggered if RT has been more than 700ms
+              if (meanrt_last5trials > 1200) { // gets triggered if RT has been more than 1200ms
                 display_too_slow_message = true;
                 console.log('I am being too slow. RT so far: ' + meanrt_last5trials);
                 return true;
@@ -541,7 +556,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
         trial_duration: fixationDuration
     }
 
-    // choose which which affective condition comes first
+    // choose which which affective condition comes first negative or neutral
     var IAPSconditions = ['neg', 'neu'];
     var shuffleIAPSconditions = jsPsych.randomization.shuffle(IAPSconditions);
     var IAPScondition1 = shuffleIAPSconditions[0];
@@ -551,18 +566,19 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     var shuffleIAPSneg = jsPsych.randomization.shuffle(photoDatabase_neg_trial)
     var shuffleIAPSneu = jsPsych.randomization.shuffle(photoDatabase_neu_trial)
 
+    // pick the IAPS images in the order in which they got shuffled
     function choose_IAPSimage() {
       console.log('condition: ', IAPScondition1);
       if (IAPScondition1 == 'neg') {
-        IAPSimage = shuffleIAPSneg[currentTrialNumber-1]; // -1 because javascript starts indexing with 0
+        IAPSimage = shuffleIAPSneg[currentTrialNumber-1]; //Subtracting 1 because javascript starts indexing at 0. So the first image is [0]
       } else {
-        IAPSimage = shuffleIAPSneu[currentTrialNumber-1]; // -1 because javascript starts indexing with 0
+        IAPSimage = shuffleIAPSneu[currentTrialNumber-1];
       };
       console.log('image selected: ', IAPSimage);
       return [[IAPSimage]];
     }
 
-    // now show an image, either negative or neutral as selected above
+    // now show the image on screen
     var pick_IAPSimage = {
       type: 'html-keyboard-response',
       stimulus: function() {
@@ -582,7 +598,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
       },
     };
 
-    // pick the winner for the first phase at random
+    // pick the winner for the first phase AB and CD matches at random
     var ABmatches = [teamA, teamB];
     var shuffleABmatches = jsPsych.randomization.shuffle(ABmatches);
     var phase1WinnerAB = shuffleABmatches[1];
@@ -598,16 +614,14 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     console.log('phase 1 loser CD: ', phase1LoserCD);
 
     //////// PHASE 1 ///////
-    //set up trial Phase1 1. numberOfTrials controls how many times this thing loops.
+    //set up trial Phase1 1. numberOfTrials controls how many times this thing loops (1 trial in this code is fixation + IAPS + AB-match + feedback + fixation + IAPS + CD-match + feedback).
     // participant will be shown a fixation cross, then a IAPS image that is either neutral or negative, and then the match
-
     function chooseLayout_subsequent_Phase1 (matchType) {
         console.log('match type: ', matchType);
         if (matchType == 'ab') {
             // create an array of all teams
             var teams = [teamA, teamB];
-            // pick layout at random so all are equally likely.
-            //That is, pick the team that is on the left. The other one is then on the right.
+            // pick layout at random so all are equally likely. That is, pick the team that is on the left.
             var layoutSelected = jsPsych.randomization.sampleWithReplacement(teams, 1, [1, 1])[0];
             if (layoutSelected == teamA) {
                 trialInfo_teamLeft = teamA;
@@ -616,7 +630,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
                 trialInfo_teamLeft = teamB;
                 trialInfo_teamRight = teamA
             }
-            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]]; //this set-up is so it'd match with the format the jsPsych plugin needs to display the images
+            return [[trialInfo_teamLeft, 0, trialInfo_teamRight]];
         } else {
             // create an array of teams
             var teams = [teamC, teamD];
@@ -662,7 +676,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
             currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerAB, phase1LoserAB];
-            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0]; //winning team has a 80% chance of winning
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
             data.match_winner = matchOutcome;
@@ -725,7 +739,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
             currentTrialNumber += 1;
             // choose the winner
             var matchPlayers = [phase1WinnerCD, phase1LoserCD];
-            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0];
+            var matchOutcome = jsPsych.randomization.sampleWithReplacement(matchPlayers, 1, [80, 20])[0]; //winning team has a 80% chance of winning
             console.log('trial winner: ', matchOutcome);
             // add match winner to data
             data.match_winner = matchOutcome;
@@ -782,7 +796,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
 
 
     //////// PHASE 2 ////////
-    //The probability will now be reversed but the condition stays same
+    //The probability will now be reversed but the condition stays same. Everything else is also the same.
     function chooseLayout_subsequent_Phase2 (matchType) {
         console.log('match type: ', matchType);
         if (matchType == 'ab') {
@@ -949,6 +963,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
 
 
     //////// PHASE 3 ////////
+    // this is essentially the same as Phase 1
     function chooseLayout_subsequent_Phase3 (matchType) {
         console.log('match type: ', matchType);
         if (matchType == 'ab') {
@@ -1168,7 +1183,6 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
 
     //set up trial Phase4. numberOfTrials controls how many times this thing loops.
     // participant will be shown a fixation cross, then a IAPS image that is either neutral or negative, and then the match
-
     function chooseLayout_subsequent_Phase4 (matchType) {
         console.log('match type: ', matchType);
         if (matchType == 'ab') {
@@ -1662,7 +1676,7 @@ https://github.com/mvainre/affective-probabilistic-reversal-learning-task--->
     // add phase 6 looping procedure to the main timeline
     timeline.push(trial_procedure_phase6_loop);
 
-    // add end message and show how much money participant "won"
+    // add end message
     var endMessage = {
         type: 'html-keyboard-response',
         stimulus: function () {
